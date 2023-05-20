@@ -2,6 +2,7 @@ package com.example.brawlheroes.engine;
 
 import com.example.brawlheroes.App;
 import com.example.brawlheroes.Consts;
+import com.example.brawlheroes.Network.Client;
 import com.example.brawlheroes.engine.weapons.Bullet;
 import javafx.geometry.Point2D;
 import javafx.geometry.Rectangle2D;
@@ -14,7 +15,7 @@ public class Engine {
     private Graphics graphics;
     private long deltaTime;
     private Stage stage;
-
+    private Client client;
     private boolean isStarted;
     private World world;
     private double findNearestPoint(Point2D point, Rectangle2D rect) {
@@ -107,11 +108,13 @@ public class Engine {
         checkCollision();
         checkBulletsCollision();
         moveBullet();
+        client.sendMove(world.getMainHero());
     }
     public void onStart() {
 
     }
-    public Engine() {
+    public Engine(Client client) {
+        this.client = client;
     }
     public Stage getStage() {
         return stage;
@@ -123,6 +126,11 @@ public class Engine {
     public void setScene(Stage stage) {
         stage.setScene(graphics.getScene());
     }
+
+    public World getWorld() {
+        return world;
+    }
+
     public void start() {
         world = new World();
         graphics = new Graphics(world);

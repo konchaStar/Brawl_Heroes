@@ -24,4 +24,7 @@ public class Connection {
             return (Message) in.readObject();
         }
     }
+    public boolean isConnected() {
+        return socket.isConnected();
+    }
 }

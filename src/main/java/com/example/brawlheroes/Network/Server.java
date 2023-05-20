@@ -1,8 +1,10 @@
 package com.example.brawlheroes.Network;
 
 import java.io.IOException;
+import java.net.Inet4Address;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.UnknownHostException;
 import java.util.*;
 
 public class Server {
@@ -28,6 +30,11 @@ public class Server {
                 isIncorrect = true;
             }
         } while(isIncorrect);
+        try {
+            System.out.println("Server started at " + Inet4Address.getLocalHost().getHostAddress() + ":" + serverSocket.getLocalPort());
+        } catch (UnknownHostException e) {
+            throw new RuntimeException(e);
+        }
         while(true) {
             try {
                 Socket socket = serverSocket.accept();
