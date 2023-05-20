@@ -2,12 +2,14 @@ package com.example.brawlheroes.engine;
 
 import com.example.brawlheroes.App;
 import com.example.brawlheroes.Consts;
-import com.example.brawlheroes.Network.Client;
+import com.example.brawlheroes.Network.Connection;
+import com.example.brawlheroes.Network.Message;
 import com.example.brawlheroes.engine.weapons.Bullet;
 import javafx.geometry.Point2D;
 import javafx.geometry.Rectangle2D;
 import javafx.stage.Stage;
 
+import java.io.IOException;
 import java.util.ArrayList;
 
 public class Engine {
@@ -15,7 +17,7 @@ public class Engine {
     private Graphics graphics;
     private long deltaTime;
     private Stage stage;
-    private Client client;
+    private Connection connection;
     private boolean isStarted;
     private World world;
     private double findNearestPoint(Point2D point, Rectangle2D rect) {
@@ -108,13 +110,23 @@ public class Engine {
         checkCollision();
         checkBulletsCollision();
         moveBullet();
-        client.sendMove(world.getMainHero());
+//        try {
+//            connection.send(new Message(world.getMainHero(), Message.MessageType.MOVE));
+//        } catch (IOException e) {
+//            throw new RuntimeException(e);
+//        }
     }
     public void onStart() {
-
+        try {
+            connection.receive();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        } catch (ClassNotFoundException e) {
+            throw new RuntimeException(e);
+        }
     }
-    public Engine(Client client) {
-        this.client = client;
+    public Engine(Connection connection) {
+        this.connection = connection;
     }
     public Stage getStage() {
         return stage;
@@ -132,13 +144,13 @@ public class Engine {
     }
 
     public void start() {
+        onStart();
         world = new World();
         graphics = new Graphics(world);
         Level.loadLevel(world, "levels/lvl1.lvl");
         setScene(App.getStage());
         Controls.setControls(graphics.getScene(), world);
         isStarted = true;
-        onStart();
         new Thread(()-> {
             while (isStarted) {
                 time = System.currentTimeMillis();
