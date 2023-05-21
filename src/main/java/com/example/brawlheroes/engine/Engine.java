@@ -3,6 +3,7 @@ package com.example.brawlheroes.engine;
 import com.example.brawlheroes.App;
 import com.example.brawlheroes.Consts;
 import com.example.brawlheroes.Network.Connection;
+import com.example.brawlheroes.Network.HeroInfo;
 import com.example.brawlheroes.Network.Message;
 import com.example.brawlheroes.engine.weapons.Bullet;
 import javafx.geometry.Point2D;
@@ -110,15 +111,34 @@ public class Engine {
         checkCollision();
         checkBulletsCollision();
         moveBullet();
-//        try {
-//            connection.send(new Message(world.getMainHero(), Message.MessageType.MOVE));
-//        } catch (IOException e) {
-//            throw new RuntimeException(e);
-//        }
+        try {
+            connection.send(new Message(world.getMainHero(), Message.MessageType.MOVE));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
     public void onStart() {
         try {
             connection.receive();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        } catch (ClassNotFoundException e) {
+            throw new RuntimeException(e);
+        }
+    }
+    private void handleMessages() {
+        try {
+            Message message = connection.receive();
+            System.out.println("received");
+            switch (message.getType()) {
+                case MOVE -> {
+                    HeroInfo info = (HeroInfo) message.getData();
+                    Hero enemy = world.getEnemy();
+                    enemy.setPosition(new Point2D(info.getPositionX(), info.getPositionY()));
+                    enemy.setDirection(new Vector2D(info.getDirectionX(), info.getDirectionY()));
+                    world.setEnemy(enemy);
+                }
+            }
         } catch (IOException e) {
             throw new RuntimeException(e);
         } catch (ClassNotFoundException e) {
@@ -151,6 +171,7 @@ public class Engine {
         setScene(App.getStage());
         Controls.setControls(graphics.getScene(), world);
         isStarted = true;
+        new Thread(this::handleMessages).start();
         new Thread(()-> {
             while (isStarted) {
                 time = System.currentTimeMillis();

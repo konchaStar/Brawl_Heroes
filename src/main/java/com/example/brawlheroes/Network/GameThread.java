@@ -1,6 +1,8 @@
 package com.example.brawlheroes.Network;
 
 
+import java.io.IOException;
+
 public class GameThread extends Thread {
     private Connection connection1;
     private Connection connection2;
@@ -13,28 +15,8 @@ public class GameThread extends Thread {
         isRunning = true;
     }
     private void handleConnection1() {
-        while(isRunning) {
-            try {
-                Message message = connection1.receive();
-                System.out.println("Message from player 1 recieved");
-                switch (message.getType()) {
-                    default -> connection2.send(message);
-                }
-            } catch (Exception e) {
-                isRunning = false;
-            }
-        }
     }
     private void handleConnection2() {
-        try {
-            Message message = connection2.receive();
-            System.out.println("Message from player 2 recieved");
-            switch (message.getType()) {
-                default -> connection1.send(message);
-            }
-        } catch (Exception e) {
-            isRunning = false;
-        }
     }
     @Override
     public void run() {
@@ -44,13 +26,39 @@ public class GameThread extends Thread {
         } catch (Exception e) {
             isRunning = false;
         }
-        new Thread(() -> {
-            handleConnection1();
-        }).start();
-        new Thread(() -> {
-            handleConnection2();
-        }).start();
-        while (isRunning);
+//        new Thread(() -> {
+//            while(true) {
+//                try {
+//                    Message message = connection1.receive();
+//                    System.out.println("Message from player 1 recieved");
+//                    connection2.send(message);
+//                } catch (Exception e) {
+//                    isRunning = false;
+//                }
+//            }
+//        }).start();
+//        new Thread(() -> {
+//            while(true) {
+//                try {
+//                    Message message = connection2.receive();
+//                    System.out.println("Message from player 2 recieved");
+//                    connection1.send(message);
+//                } catch (Exception e) {
+//                    isRunning = false;
+//                }
+//            }
+//        }).start();
+        while (isRunning) {
+            try {
+                Message message = connection1.receive();
+                connection2.send(message);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            } catch (ClassNotFoundException e) {
+                throw new RuntimeException(e);
+            }
 
+        }
+        System.out.println("Thread end");
     }
 }

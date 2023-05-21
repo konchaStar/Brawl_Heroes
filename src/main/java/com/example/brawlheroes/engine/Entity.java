@@ -9,7 +9,9 @@ public class Entity {
 
     protected Rectangle2D hitbox;
     protected Image image;
+    public Entity() {
 
+    }
     public Entity(Point2D position, Rectangle2D hitbox, Image image) {
         this.position = position;
         this.hitbox = hitbox;

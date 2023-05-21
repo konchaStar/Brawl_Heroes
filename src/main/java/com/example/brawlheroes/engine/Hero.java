@@ -7,6 +7,7 @@ import javafx.geometry.Point2D;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.image.Image;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,7 +17,6 @@ public class Hero extends Entity {
     private int selected;
     private double healthPoints;
     private boolean isAlive;
-    private boolean isRolling;
     private double speed = 120.f;
 
     public Vector2D getDirection() {
