@@ -1,27 +1,33 @@
 package com.example.brawlheroes.engine;
 
 import com.example.brawlheroes.Consts;
+import com.example.brawlheroes.Network.BulletInfo;
+import com.example.brawlheroes.Network.Connection;
+import com.example.brawlheroes.Network.Message;
 import com.example.brawlheroes.engine.weapons.Bullet;
 import com.example.brawlheroes.engine.weapons.Pistol;
 import javafx.geometry.Point2D;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.image.Image;
 
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 public class World {
     private ResourceLoader loader;
     private List<Entity> objects = new ArrayList<>();
     private List<Spawn> spawns = new ArrayList<>();
-    private List<Bullet> bullets = new ArrayList<>();
-    private List<Item> items = new ArrayList<>();
+    private List<Bullet> bullets = new LinkedList<>();
+    private List<Item> items = new LinkedList<>();
     private Image floor;
     private Point2D mapSize;
     private Hero mainHero;
     private Hero enemy;
+    private Connection connection;
 
-    public World() {
+    public World(Connection connection) {
         loader = new ResourceLoader();
         mainHero = new Hero(new Point2D(70,70), new Rectangle2D(0,0, Consts.TILE_SIZE,Consts.TILE_SIZE),
                 loader.getHeroImage());
@@ -29,6 +35,7 @@ public class World {
         enemy = new Hero(new Point2D(110,110), new Rectangle2D(0,0, Consts.TILE_SIZE,Consts.TILE_SIZE),
                 loader.getHeroImage());
         enemy.setDirection(new Vector2D(1, 0));
+        this.connection = connection;
     }
     public void deleteBullet(Bullet bullet) {
         bullets.remove(bullet);
@@ -80,8 +87,17 @@ public class World {
     public void setEnemy(Hero enemy) {
         this.enemy = enemy;
     }
-    public void addBullet(Bullet bullet) {
+    public void addBullet(Bullet bullet, boolean local) {
         bullets.add(bullet);
+        if(local) {
+            BulletInfo info = new BulletInfo(bullet.getDamage(), bullet.getPosition().getX(), bullet.getPosition().getY(),
+                    bullet.getDirection().getX(), bullet.getDirection().getY());
+            try {
+                connection.send(new Message(info, Message.MessageType.FIRE));
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
     }
 
     public ResourceLoader getLoader() {

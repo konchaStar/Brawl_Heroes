@@ -50,8 +50,10 @@ public class GameThread extends Thread {
 //        }).start();
         while (isRunning) {
             try {
-                Message message = connection1.receive();
-                connection2.send(message);
+                Message message1 = connection1.receive();
+                Message message2 = connection2.receive();
+                connection2.send(message1);
+                connection1.send(message2);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             } catch (ClassNotFoundException e) {

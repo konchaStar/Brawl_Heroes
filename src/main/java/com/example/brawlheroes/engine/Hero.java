@@ -7,7 +7,6 @@ import javafx.geometry.Point2D;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.image.Image;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 

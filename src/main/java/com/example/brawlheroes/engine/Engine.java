@@ -112,7 +112,9 @@ public class Engine {
         checkBulletsCollision();
         moveBullet();
         try {
-            connection.send(new Message(world.getMainHero(), Message.MessageType.MOVE));
+            HeroInfo info = new HeroInfo(world.getMainHero().getPosition().getX(), world.getMainHero().getPosition().getY(),
+                    world.getMainHero().getDirection().getX(), world.getMainHero().getDirection().getY());
+            connection.send(new Message(info, Message.MessageType.MOVE));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -128,15 +130,16 @@ public class Engine {
     }
     private void handleMessages() {
         try {
-            Message message = connection.receive();
-            System.out.println("received");
-            switch (message.getType()) {
-                case MOVE -> {
-                    HeroInfo info = (HeroInfo) message.getData();
-                    Hero enemy = world.getEnemy();
-                    enemy.setPosition(new Point2D(info.getPositionX(), info.getPositionY()));
-                    enemy.setDirection(new Vector2D(info.getDirectionX(), info.getDirectionY()));
-                    world.setEnemy(enemy);
+            while (isStarted) {
+                Message message = connection.receive();
+                switch (message.getType()) {
+                    case MOVE -> {
+                        HeroInfo info = (HeroInfo) message.getData();
+                        Hero enemy = world.getEnemy();
+                        enemy.setPosition(new Point2D(info.getPositionX(), info.getPositionY()));
+                        enemy.setDirection(new Vector2D(info.getDirectionX(), info.getDirectionY()));
+                        world.setEnemy(enemy);
+                    }
                 }
             }
         } catch (IOException e) {
@@ -165,7 +168,7 @@ public class Engine {
 
     public void start() {
         onStart();
-        world = new World();
+        world = new World(connection);
         graphics = new Graphics(world);
         Level.loadLevel(world, "levels/lvl1.lvl");
         setScene(App.getStage());

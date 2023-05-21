@@ -14,7 +14,7 @@ public class Pistol extends Weapon {
         if(System.currentTimeMillis() - lastShot > delay) {
             world.addBullet(new Bullet(world.getMainHero(), world.getMainHero().getPosition(), new Rectangle2D(0, 0, 15, 10),
                     world.getLoader().getBulletImage(), world.getMainHero().getDirection(),
-                    10, 600));
+                    10, 600), true);
             lastShot = System.currentTimeMillis();
         }
     }
