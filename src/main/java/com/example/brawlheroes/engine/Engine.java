@@ -2,6 +2,7 @@ package com.example.brawlheroes.engine;
 
 import com.example.brawlheroes.App;
 import com.example.brawlheroes.Consts;
+import com.example.brawlheroes.Network.BulletInfo;
 import com.example.brawlheroes.Network.Connection;
 import com.example.brawlheroes.Network.HeroInfo;
 import com.example.brawlheroes.Network.Message;
@@ -139,6 +140,13 @@ public class Engine {
                         enemy.setPosition(new Point2D(info.getPositionX(), info.getPositionY()));
                         enemy.setDirection(new Vector2D(info.getDirectionX(), info.getDirectionY()));
                         world.setEnemy(enemy);
+                    }
+                    case FIRE -> {
+                        BulletInfo info = (BulletInfo) message.getData();
+                        Bullet bullet = new Bullet(world.getEnemy(), new Point2D(info.getPositionX(), info.getPositionY()),
+                                new Rectangle2D(0,0,15,10), world.getLoader().getBulletImage(),
+                                new Vector2D(info.getDirectionX(), info.getDirectionY()), info.getDamage(), info.getSpeed());
+                        world.addBullet(bullet, false);
                     }
                 }
             }

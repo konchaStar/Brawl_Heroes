@@ -90,7 +90,7 @@ public class World {
     public void addBullet(Bullet bullet, boolean local) {
         bullets.add(bullet);
         if(local) {
-            BulletInfo info = new BulletInfo(bullet.getDamage(), bullet.getPosition().getX(), bullet.getPosition().getY(),
+            BulletInfo info = new BulletInfo(bullet.getDamage(), bullet.getSpeed(), bullet.getPosition().getX(), bullet.getPosition().getY(),
                     bullet.getDirection().getX(), bullet.getDirection().getY());
             try {
                 connection.send(new Message(info, Message.MessageType.FIRE));
