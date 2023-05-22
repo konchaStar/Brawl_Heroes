@@ -11,7 +11,8 @@ public class Pistol extends Weapon {
     }
     @Override
     public void fire(World world) {
-        if(System.currentTimeMillis() - lastShot > delay) {
+        if(System.currentTimeMillis() - lastShot > delay && ammo > 0) {
+            ammo--;
             world.addBullet(new Bullet(world.getMainHero(), world.getMainHero().getPosition(), new Rectangle2D(0, 0, 15, 10),
                     world.getLoader().getBulletImage(), world.getMainHero().getDirection(),
                     10, 600), true);

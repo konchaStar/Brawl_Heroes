@@ -87,4 +87,7 @@ public class Graphics {
     private void drawCrosshair(GraphicsContext context) {
         context.drawImage(world.getLoader().getCrosshairImage(), Controls.getMouseX() - 10, Controls.getMouseY() - 10, 20, 20);
     }
+    public void disconnect() {
+
+    }
 }

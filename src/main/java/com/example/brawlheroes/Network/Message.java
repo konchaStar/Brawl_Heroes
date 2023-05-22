@@ -4,7 +4,7 @@ import java.io.Serializable;
 
 public class Message implements Serializable {
     public static enum MessageType {
-        MOVE, FIRE, CONNECT, DEATH, RESPAWN, STARTED
+        MOVE, FIRE, CONNECT, DEATH, RESPAWN, STARTED, TEST
     }
     private Object data;
     private MessageType type;

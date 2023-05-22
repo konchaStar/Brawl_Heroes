@@ -1,12 +1,17 @@
 package com.example.brawlheroes.Network;
 
 
+import javafx.geometry.Point2D;
+
 import java.io.IOException;
+import java.util.Random;
 
 public class GameThread extends Thread {
     private Connection connection1;
     private Connection connection2;
     private boolean isRunning;
+    private final StartPosition firstSpawn = new StartPosition(60, 60);
+    private final StartPosition secondSpawn = new StartPosition(1160, 820);
 
     public GameThread(Connection connection1, Connection connection2) {
         this.connection1 = connection1;
@@ -21,33 +26,11 @@ public class GameThread extends Thread {
     @Override
     public void run() {
         try {
-            connection2.send(new Message(null, Message.MessageType.STARTED));
-            connection1.send(new Message(null, Message.MessageType.STARTED));
+                connection2.send(new Message(firstSpawn, Message.MessageType.STARTED));
+                connection1.send(new Message(secondSpawn, Message.MessageType.STARTED));
         } catch (Exception e) {
             isRunning = false;
         }
-//        new Thread(() -> {
-//            while(true) {
-//                try {
-//                    Message message = connection1.receive();
-//                    System.out.println("Message from player 1 recieved");
-//                    connection2.send(message);
-//                } catch (Exception e) {
-//                    isRunning = false;
-//                }
-//            }
-//        }).start();
-//        new Thread(() -> {
-//            while(true) {
-//                try {
-//                    Message message = connection2.receive();
-//                    System.out.println("Message from player 2 recieved");
-//                    connection1.send(message);
-//                } catch (Exception e) {
-//                    isRunning = false;
-//                }
-//            }
-//        }).start();
         while (isRunning) {
             try {
                 Message message1 = connection1.receive();
@@ -55,10 +38,15 @@ public class GameThread extends Thread {
                 connection2.send(message1);
                 connection1.send(message2);
             } catch (IOException e) {
-                throw new RuntimeException(e);
+                isRunning = false;
             } catch (ClassNotFoundException e) {
-                throw new RuntimeException(e);
+                isRunning = false;
             }
+        }
+        try {
+            connection2.close();
+            connection1.close();
+        } catch (IOException e) {
 
         }
         System.out.println("Thread end");

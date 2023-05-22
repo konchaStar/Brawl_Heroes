@@ -6,6 +6,7 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.*;
+import java.util.concurrent.LinkedBlockingDeque;
 
 public class Server {
     private ServerSocket serverSocket;
@@ -15,7 +16,7 @@ public class Server {
         new Server().start();
     }
     private Server() {
-        connections = new ArrayDeque<>();
+        connections = new LinkedBlockingDeque<>();
     }
     private void start() {
         Scanner scanner = new Scanner(System.in);
@@ -39,9 +40,33 @@ public class Server {
             try {
                 Socket socket = serverSocket.accept();
                 connections.add(new Connection(socket));
-                if(connections.size() > 1) {
-                    Thread gameThread = new GameThread(connections.poll(), connections.poll());
-                    gameThread.start();
+                while (connections.size() > 1) {
+                    Connection connection1 = connections.poll();
+                    Connection connection2 = connections.poll();
+                    boolean connected = true;
+                    try {
+                        connection1.send(new Message(null, Message.MessageType.TEST));
+                    } catch (IOException e) {
+                        connected = false;
+                        connection1.close();
+                    }
+                    try {
+                        connection2.send(new Message(null, Message.MessageType.TEST));
+                    } catch (IOException e) {
+                        connected = false;
+                        connection2.close();
+                    }
+                    if(!connected) {
+                        if(connection1.isConnected()) {
+                            connections.add(connection1);
+                        }
+                        if(connection2.isConnected()) {
+                            connections.add(connection2);
+                        }
+                    }
+                    if(connected) {
+                        new GameThread(connection1, connection2).start();
+                    }
                 }
             } catch (IOException e) {
                 throw new RuntimeException(e);

@@ -2,13 +2,13 @@ package com.example.brawlheroes.engine;
 
 import com.example.brawlheroes.App;
 import com.example.brawlheroes.Consts;
-import com.example.brawlheroes.Network.BulletInfo;
-import com.example.brawlheroes.Network.Connection;
-import com.example.brawlheroes.Network.HeroInfo;
-import com.example.brawlheroes.Network.Message;
+import com.example.brawlheroes.Network.*;
 import com.example.brawlheroes.engine.weapons.Bullet;
+import javafx.application.Platform;
+import javafx.fxml.FXMLLoader;
 import javafx.geometry.Point2D;
 import javafx.geometry.Rectangle2D;
+import javafx.scene.Scene;
 import javafx.stage.Stage;
 
 import java.io.IOException;
@@ -117,17 +117,12 @@ public class Engine {
                     world.getMainHero().getDirection().getX(), world.getMainHero().getDirection().getY());
             connection.send(new Message(info, Message.MessageType.MOVE));
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            disconnect();
         }
     }
-    public void onStart() {
-        try {
-            connection.receive();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        } catch (ClassNotFoundException e) {
-            throw new RuntimeException(e);
-        }
+    public void onStart(StartPosition position) {
+        world = new World(connection);
+        world.getMainHero().setPosition(new Point2D(position.getPositionX(), position.getPositionY()));
     }
     private void handleMessages() {
         try {
@@ -151,13 +146,14 @@ public class Engine {
                 }
             }
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            disconnect();
         } catch (ClassNotFoundException e) {
             throw new RuntimeException(e);
         }
     }
-    public Engine(Connection connection) {
+    public Engine(Connection connection, StartPosition position) {
         this.connection = connection;
+        onStart(position);
     }
     public Stage getStage() {
         return stage;
@@ -168,6 +164,10 @@ public class Engine {
     }
     public void setScene(Stage stage) {
         stage.setScene(graphics.getScene());
+        this.stage = App.getStage();
+    }
+    public boolean isStarted() {
+        return isStarted;
     }
 
     public World getWorld() {
@@ -175,12 +175,10 @@ public class Engine {
     }
 
     public void start() {
-        onStart();
-        world = new World(connection);
         graphics = new Graphics(world);
         Level.loadLevel(world, "levels/lvl1.lvl");
         setScene(App.getStage());
-        Controls.setControls(graphics.getScene(), world);
+        Controls.setControls(graphics.getScene(), world, this);
         isStarted = true;
         new Thread(this::handleMessages).start();
         new Thread(()-> {
@@ -189,12 +187,27 @@ public class Engine {
                 onUpdate();
                 graphics.draw();
                 try {
-                    Thread.currentThread().sleep(15);
+                    Thread.currentThread().sleep(25);
                 } catch (InterruptedException e) {
                     throw new RuntimeException(e);
                 }
                 deltaTime = System.currentTimeMillis() - time;
             }
         }).start();
+    }
+    private void disconnect() {
+        isStarted = false;
+        graphics.disconnect();
+        Platform.runLater(() -> {
+            FXMLLoader fxmlLoader = new FXMLLoader(App.class.getResource("menu.fxml"));
+            Scene scene = null;
+            try {
+                scene = new Scene(fxmlLoader.load());
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+            scene.getStylesheets().addAll(App.class.getResource("menuStyle.css").toExternalForm());
+            stage.setScene(scene);
+        });
     }
 }

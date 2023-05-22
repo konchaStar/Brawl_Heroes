@@ -25,6 +25,9 @@ public class Connection {
         }
     }
     public boolean isConnected() {
-        return socket.isConnected();
+        return !socket.isClosed();
+    }
+    public void close() throws IOException {
+        socket.close();
     }
 }

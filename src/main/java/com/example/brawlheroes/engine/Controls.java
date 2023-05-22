@@ -12,7 +12,7 @@ public class Controls {
     private static double mouseX;
     private static double mouseY;
 
-    public static void setControls(Scene scene, World world) {
+    public static void setControls(Scene scene, World world, Engine engine) {
         scene.setOnKeyPressed(e -> {
             if(e.getCode() == KeyCode.A) {
                 left = true;
@@ -25,6 +25,11 @@ public class Controls {
             }
             if(e.getCode() == KeyCode.D) {
                 right = true;
+            }
+            if(e.getCode() == KeyCode.ESCAPE) {
+                if(engine.isStarted()) {
+
+                }
             }
         });
         scene.setOnKeyReleased(e -> {
