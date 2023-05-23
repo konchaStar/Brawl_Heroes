@@ -19,10 +19,6 @@ public class GameThread extends Thread {
         System.out.println("Thread started");
         isRunning = true;
     }
-    private void handleConnection1() {
-    }
-    private void handleConnection2() {
-    }
     @Override
     public void run() {
         try {

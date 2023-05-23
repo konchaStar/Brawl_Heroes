@@ -10,9 +10,12 @@ import javafx.geometry.Point2D;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import javafx.util.Pair;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Vector;
 
 public class Engine {
     private long time;
@@ -22,23 +25,25 @@ public class Engine {
     private Connection connection;
     private boolean isStarted;
     private World world;
-    private double findNearestPoint(Point2D point, Rectangle2D rect) {
+    private Vector2D[] findNearestPoint(Point2D point, Rectangle2D rect) {
         Point2D[] points = {
                 new Point2D(rect.getMinX(), rect.getMinY()),
                 new Point2D(rect.getMaxX(), rect.getMinY()),
                 new Point2D(rect.getMinX(), rect.getMaxY()),
                 new Point2D(rect.getMaxX(), rect.getMaxY())
         };
-        double min = -1;
+        Vector2D[] result = new Vector2D[2];
+        Vector2D[] vectors = new Vector2D[4];
         for(int i = 0; i < points.length; i++) {
-            Point2D vector = points[i].subtract(point).normalize().multiply(deltaTime / 1000.0)
-                    .multiply(world.getMainHero().getSpeed());
-            double dot = vector.getX() * Controls.getDirection().getX() + vector.getY() * Controls.getDirection().getY();
-            if(dot < min) {
-                min = dot;
-            }
+            Point2D vector = points[i].subtract(point);
+            vectors[i] = new Vector2D(vector.getX(), vector.getY());
         }
-        return min;
+        Arrays.sort(vectors, (v1, v2) -> {
+           return (int)Math.signum(v1.length() - v2.length());
+        });
+        result[0] = vectors[0];
+        result[1] = vectors[1];
+        return result;
     }
     private void solveCollision(Rectangle2D wallRect, Rectangle2D heroRect) {
         Point2D[] points = {
@@ -49,17 +54,26 @@ public class Engine {
         };
         for(Point2D point : points) {
             if(wallRect.contains(point)) {
-                Vector2D direction = Controls.getDirection();
-                double nearest = findNearestPoint(point, wallRect);
+                Vector2D direction = Controls.getDirection().multiply(-1).normalize();
+                Vector2D[] nearest = findNearestPoint(point, wallRect);
+                double length = Math.sqrt(nearest[0].getX() * nearest[0].getX() + nearest[0].getY() * nearest[0].getY());
+                nearest[1].subtract(nearest[0]).normalize();
+                nearest[0].normalize();
+                double angle1 = Math.acos(Math.abs(nearest[0].getX() * direction.getX() + nearest[0].getY() * direction.getY()));
+                double angle2 = Math.acos(Math.abs(nearest[0].getX() * nearest[1].getX() + nearest[0].getY() * nearest[1].getY()));
+                double angle3 = Math.PI - angle1 - angle2;
+                direction = direction.multiply(Math.sin(angle2) * length / Math.sin(angle3));
                 Point2D position = world.getMainHero().getPosition();
-                world.getMainHero().setPosition(position.add(new Point2D(direction.getX() * nearest, direction.getY() * nearest)));
+                position = new Point2D(position.getX() + direction.getX(), position.getY() + direction.getY());
+                world.getMainHero().setPosition(position);
                 break;
             }
         }
     }
+
     private void checkCollision() {
         Hero hero = world.getMainHero();
-        Rectangle2D heroRect = new Rectangle2D(hero.getPosition().getX() - Consts.TILE_SIZE / 2, hero.getPosition().getY() - Consts.TILE_SIZE / 2,
+        Rectangle2D heroRect = new Rectangle2D(hero.getPosition().getX() - Consts.TILE_SIZE / 2 + 1, hero.getPosition().getY() - Consts.TILE_SIZE / 2 + 1,
                 hero.getHitbox().getWidth(), hero.getHitbox().getHeight());
         for(Entity wall : world.getObjects()) {
             Rectangle2D wallRect = new Rectangle2D(wall.getPosition().getX(), wall.getPosition().getY(),

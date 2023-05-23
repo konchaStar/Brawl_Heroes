@@ -9,13 +9,13 @@
     -fx-background-position: 0,0;
 }
 #play {
-    -fx-background-size: 100,50;
+    -fx-background-size: 200,75;
     -fx-background-color: transparent;
     -fx-background-image: url("images/start_button.png");
     -fx-background-position: 0,0;
 }
 #cancel {
-    -fx-background-size: 100,50;
+    -fx-background-size: 120,50;
     -fx-background-color: transparent;
     -fx-background-image: url("images/cancel_button.png");
     -fx-background-position: 0,0;

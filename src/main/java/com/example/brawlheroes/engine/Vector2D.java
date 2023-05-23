@@ -50,4 +50,7 @@ public class Vector2D {
     public double dot(Vector2D vector) {
         return this.x * vector.x + this.y * vector.y;
     }
+    public double length() {
+        return Math.sqrt(x * x + y * y);
+    }
 }

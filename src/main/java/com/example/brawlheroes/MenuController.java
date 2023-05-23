@@ -9,6 +9,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 
 import java.io.IOException;
+import java.net.InetSocketAddress;
 import java.net.Socket;
 
 public class MenuController {
@@ -30,7 +31,8 @@ public class MenuController {
     }
     public void onPlay() {
         try {
-            Socket socket = new Socket("localhost", 1234);
+            Socket socket = new Socket();
+            socket.connect(new InetSocketAddress("localhost", 1234), 1000);
             play.setVisible(false);
             cancel.setVisible(true);
             connection = new Connection(socket);

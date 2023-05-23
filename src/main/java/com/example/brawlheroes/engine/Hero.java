@@ -54,9 +54,7 @@ public class Hero extends Entity {
         weapons.get(selected).fire(world);
     }
     public void addWeapon(Weapon weapon) {
-        if (weapon.getClass().equals(Pistol.class)) {
-            weapons.add(0, weapon);
-        }
+        weapons.add(0, weapon);
     }
 
     public double getSpeed() {

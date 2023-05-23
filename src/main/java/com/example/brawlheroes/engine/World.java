@@ -5,22 +5,21 @@ import com.example.brawlheroes.Network.BulletInfo;
 import com.example.brawlheroes.Network.Connection;
 import com.example.brawlheroes.Network.Message;
 import com.example.brawlheroes.engine.weapons.Bullet;
-import com.example.brawlheroes.engine.weapons.Pistol;
+import com.example.brawlheroes.engine.weapons.Shotgun;
 import javafx.geometry.Point2D;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.image.Image;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 
 public class World {
     private ResourceLoader loader;
     private List<Entity> objects = new ArrayList<>();
     private List<Spawn> spawns = new ArrayList<>();
-    private List<Bullet> bullets = new LinkedList<>();
-    private List<Item> items = new LinkedList<>();
+    private List<Bullet> bullets = new ArrayList<>();
+    private List<Item> items = new ArrayList<>();
     private Image floor;
     private Point2D mapSize;
     private Hero mainHero;
@@ -29,9 +28,9 @@ public class World {
 
     public World(Connection connection) {
         loader = new ResourceLoader();
-        mainHero = new Hero(new Point2D(70,70), new Rectangle2D(0,0, Consts.TILE_SIZE,Consts.TILE_SIZE),
+        mainHero = new Hero(new Point2D(70,70), new Rectangle2D(0,0, Consts.TILE_SIZE - 2,Consts.TILE_SIZE - 2),
                 loader.getHeroImage());
-        mainHero.addWeapon(new Pistol());
+        mainHero.addWeapon(new Shotgun());
         enemy = new Hero(new Point2D(110,110), new Rectangle2D(0,0, Consts.TILE_SIZE,Consts.TILE_SIZE),
                 loader.getHeroImage());
         enemy.setDirection(new Vector2D(1, 0));
