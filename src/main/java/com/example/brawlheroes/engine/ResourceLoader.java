@@ -11,6 +11,7 @@ public class ResourceLoader {
     private Image bulletImage;
     private Image crosshairImage;
     private Image floorImage;
+    private Image bloodImage;
     public ResourceLoader() {
         try {
             heroImage = new Image(new FileInputStream("sprites/hero.png"));
@@ -18,6 +19,7 @@ public class ResourceLoader {
             crosshairImage = new Image(new FileInputStream("sprites/crosshair.png"));
             wallImage = new Image(new FileInputStream("sprites/wall.png"));
             floorImage = new Image(new FileInputStream("sprites/floor.jpg"));
+            bloodImage = new Image(new FileInputStream("sprites/blood.png"));
         } catch (FileNotFoundException e) {
             throw new RuntimeException(e);
         }
@@ -41,5 +43,9 @@ public class ResourceLoader {
 
     public Image getFloorImage() {
         return floorImage;
+    }
+
+    public Image getBloodImage() {
+        return bloodImage;
     }
 }

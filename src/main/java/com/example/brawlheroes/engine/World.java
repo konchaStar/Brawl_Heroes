@@ -5,6 +5,7 @@ import com.example.brawlheroes.Network.BulletInfo;
 import com.example.brawlheroes.Network.Connection;
 import com.example.brawlheroes.Network.Message;
 import com.example.brawlheroes.engine.weapons.Bullet;
+import com.example.brawlheroes.engine.weapons.Pistol;
 import com.example.brawlheroes.engine.weapons.Shotgun;
 import javafx.geometry.Point2D;
 import javafx.geometry.Rectangle2D;
@@ -30,7 +31,7 @@ public class World {
         loader = new ResourceLoader();
         mainHero = new Hero(new Point2D(70,70), new Rectangle2D(0,0, Consts.TILE_SIZE - 2,Consts.TILE_SIZE - 2),
                 loader.getHeroImage());
-        mainHero.addWeapon(new Shotgun());
+        mainHero.addWeapon(new Pistol());
         enemy = new Hero(new Point2D(110,110), new Rectangle2D(0,0, Consts.TILE_SIZE,Consts.TILE_SIZE),
                 loader.getHeroImage());
         enemy.setDirection(new Vector2D(1, 0));

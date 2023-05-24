@@ -30,7 +30,9 @@ public class Level {
                         }
                     }
                 } else {
-
+                    if(str.substring(1).startsWith("shotgun_spawner")) {
+                        world.getSpawns().add(new Spawn());
+                    }
                 }
             }
             world.setMapSize(new Point2D((column + 1) * Consts.TILE_SIZE, (row + 1) * Consts.TILE_SIZE));

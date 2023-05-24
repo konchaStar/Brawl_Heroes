@@ -1,6 +1,7 @@
 package com.example.brawlheroes.Network;
 
 
+import com.example.brawlheroes.Consts;
 import javafx.geometry.Point2D;
 
 import java.io.IOException;
@@ -29,10 +30,28 @@ public class GameThread extends Thread {
         }
         while (isRunning) {
             try {
+                int kills1 = 0;
+                int kills2 = 0;
                 Message message1 = connection1.receive();
                 Message message2 = connection2.receive();
-                connection2.send(message1);
-                connection1.send(message2);
+                if(message1.getType() == Message.MessageType.DEATH) {
+                    kills2++;
+                }
+                if(message2.getType() == Message.MessageType.DEATH) {
+                    kills1++;
+                }
+                if(kills1 == Consts.KILLS) {
+                    connection1.send(new Message(null, Message.MessageType.VICTORY));
+                    connection2.send(new Message(null, Message.MessageType.DEFEAT));
+                    isRunning = false;
+                } else if (kills2 == Consts.KILLS) {
+                    connection2.send(new Message(null, Message.MessageType.VICTORY));
+                    connection1.send(new Message(null, Message.MessageType.DEFEAT));
+                    isRunning = false;
+                } else {
+                    connection2.send(message1);
+                    connection1.send(message2);
+                }
             } catch (IOException e) {
                 isRunning = false;
             } catch (ClassNotFoundException e) {

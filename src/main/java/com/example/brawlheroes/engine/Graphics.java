@@ -35,9 +35,14 @@ public class Graphics {
                 Consts.WINDOW_HEIGHT / 2 - world.getMainHero().getPosition().getY());
         drawFloor(context);
         drawWalls(context);
+        drawItems(context);
         drawBullets(context);
-        drawEnemy(context);
-        drawHero(context);
+        if(world.getEnemy().isAlive()) {
+            drawEnemy(context);
+        }
+        if(world.getMainHero().isAlive()) {
+            drawHero(context);
+        }
         context.restore();
         drawCrosshair(context);
     }
@@ -86,6 +91,15 @@ public class Graphics {
     }
     private void drawCrosshair(GraphicsContext context) {
         context.drawImage(world.getLoader().getCrosshairImage(), Controls.getMouseX() - 10, Controls.getMouseY() - 10, 20, 20);
+    }
+    private void drawItems(GraphicsContext context) {
+        for(Item item : world.getItems()) {
+            context.save();
+            context.translate(item.getPosition().getX(), item.getPosition().getY());
+            context.drawImage(item.getImage(), -item.getHitbox().getWidth() / 2.0, -item.getHitbox().getHeight() / 2.0,
+                    item.getHitbox().getWidth(), item.getHitbox().getHeight());
+            context.restore();
+        }
     }
     public void disconnect() {
 

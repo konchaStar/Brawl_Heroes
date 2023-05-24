@@ -1,5 +1,6 @@
 package com.example.brawlheroes.engine;
 
+import com.example.brawlheroes.Consts;
 import javafx.scene.Scene;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseButton;
@@ -29,6 +30,15 @@ public class Controls {
             if(e.getCode() == KeyCode.ESCAPE) {
                 if(engine.isStarted()) {
 
+                }
+            }
+            if(e.getCode() == KeyCode.SPACE) {
+                if(world.getMainHero().isAlive() && System.currentTimeMillis() - world.getMainHero().getLastStrafe() > Consts.STRAFE_DELAY
+                        && !(getDirection().getX() == 0 && getDirection().getY() == 0)) {
+                    world.getMainHero().setSpeed(Consts.STRAFE_SPEED);
+                    world.getMainHero().setLastStrafe(System.currentTimeMillis());
+                } else if(!world.getMainHero().isAlive()) {
+                    engine.respawn();
                 }
             }
         });

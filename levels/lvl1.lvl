@@ -20,6 +20,6 @@ w w w f f f f f f f f f f f f f f f f f f f f f w w w w f f w
 w f f f f w f f f f f f f f f f f f f f f f f f f f f f f f w
 w f f f f w f f f f f f f f f f f f f f f f f f f f f f f f w
 w w w w w w w w w w w w w w w w w w w w w w w w w w w w w w w
-;shotgun_spawner 1 10 10
-;shotgun_spawner 2 10 10
+;shotgun_spawner 1 100 780
+;shotgun_spawner 2 1140 100
 ;rifle_spawner 3 10 10
