@@ -32,6 +32,13 @@ public class Controls {
 
                 }
             }
+            if(e.getCode() == KeyCode.E) {
+                world.getMainHero().setSelected((world.getMainHero().getSelected() + 1) % world.getMainHero().getWeapons());
+            }
+            if(e.getCode() == KeyCode.Q) {
+                world.getMainHero().setSelected((world.getMainHero().getSelected() - 1 +
+                        world.getMainHero().getWeapons()) % world.getMainHero().getWeapons());
+            }
             if(e.getCode() == KeyCode.SPACE) {
                 if(world.getMainHero().isAlive() && System.currentTimeMillis() - world.getMainHero().getLastStrafe() > Consts.STRAFE_DELAY
                         && !(getDirection().getX() == 0 && getDirection().getY() == 0)) {

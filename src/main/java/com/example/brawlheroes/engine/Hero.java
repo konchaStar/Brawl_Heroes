@@ -110,4 +110,15 @@ public class Hero extends Entity {
     public void setCheckedDeath(boolean checkedDeath) {
         this.checkedDeath = checkedDeath;
     }
+    public int getWeapons() {
+        return weapons.size();
+    }
+
+    public int getSelected() {
+        return selected;
+    }
+
+    public void setSelected(int selected) {
+        this.selected = selected;
+    }
 }

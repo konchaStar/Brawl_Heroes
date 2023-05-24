@@ -1,6 +1,8 @@
 package com.example.brawlheroes.engine;
 
 import com.example.brawlheroes.Consts;
+import com.example.brawlheroes.engine.weapons.Rifle;
+import com.example.brawlheroes.engine.weapons.Shotgun;
 import javafx.geometry.Point2D;
 import javafx.geometry.Rectangle2D;
 
@@ -31,7 +33,15 @@ public class Level {
                     }
                 } else {
                     if(str.substring(1).startsWith("shotgun_spawner")) {
-                        world.getSpawns().add(new Spawn());
+                        int id = Integer.valueOf(str.split(" ")[1]);
+                        double x = Double.valueOf(str.split(" ")[2]);
+                        double y = Double.valueOf(str.split(" ")[3]);
+                        world.getSpawns().add(new Spawn(20000, id, Shotgun.class, new Point2D(x, y)));
+                    } else if (str.substring(1).startsWith("rifle_spawner")) {
+                        int id = Integer.valueOf(str.split(" ")[1]);
+                        double x = Double.valueOf(str.split(" ")[2]);
+                        double y = Double.valueOf(str.split(" ")[3]);
+                        world.getSpawns().add(new Spawn(20000, id, Rifle.class, new Point2D(x, y)));
                     }
                 }
             }

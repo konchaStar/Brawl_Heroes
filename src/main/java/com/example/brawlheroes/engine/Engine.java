@@ -83,15 +83,38 @@ public class Engine {
                 solveCollision(wallRect, heroRect);
             }
         }
+        ArrayList<Integer> picked = new ArrayList<>();
         for(Item item : world.getItems()) {
             if(item.getSpawnerId() != 0) {
-
+                Rectangle2D itemRect = new Rectangle2D(item.getPosition().getX() - Consts.TILE_SIZE / 2, item.getPosition().getY() - Consts.TILE_SIZE / 2,
+                        item.getHitbox().getWidth(), item.getHitbox().getHeight());
+                if(itemRect.intersects(heroRect)) {
+                    picked.add(world.getSpawns().stream()
+                            .filter(s -> s.getId() == item.getSpawnerId())
+                            .findAny()
+                            .get().pick(world));
+                    try {
+                        connection.send(new Message(Integer.valueOf(item.getSpawnerId()), Message.MessageType.PICKED));
+                    } catch (IOException e) {
+                        disconnect();
+                    }
+                }
             }
+        }
+        for(Integer id : picked) {
+            world.getItems().removeIf(i -> id == i.getSpawnerId());
         }
     }
     private void moveBullet() {
         for(Bullet bullet : world.getBullets()) {
             bullet.move(deltaTime / 1000.0);
+        }
+    }
+    private void checkSpawns() {
+        for(Spawn spawn : world.getSpawns()) {
+            if(!spawn.isSpawned() && System.currentTimeMillis() - spawn.getLastSpawn() > spawn.getDelay()) {
+                spawn.spawn(world);
+            }
         }
     }
     private void checkBulletsCollision() {
@@ -106,9 +129,6 @@ public class Engine {
             if(heroRect.intersects(bulletRect) && bullet.getOwner() != world.getMainHero()) {
                 world.getMainHero().damage(bullet.getDamage());
                 delete.add(bullet);
-                if(world.getMainHero().getHealthPoints() == 0) {
-
-                }
             } else if (enemyRect.intersects(bulletRect) && bullet.getOwner() != world.getEnemy()) {
                 delete.add(bullet);
             } else {
@@ -165,6 +185,7 @@ public class Engine {
             }
         }
         checkDeath();
+        checkSpawns();
     }
     public void onStart(StartPosition position) {
         world = new World(connection);
@@ -215,6 +236,15 @@ public class Engine {
                     }
                     case RESPAWN -> {
                         world.getEnemy().setAlive(true);
+                    }
+                    case PICKED -> {
+                        int id = (Integer) message.getData();
+                        Spawn spawn = world.getSpawns().stream()
+                                        .filter(s -> id == s.getId())
+                                        .findAny().get();
+                        spawn.setSpawned(false);
+                        spawn.setLastSpawn(System.currentTimeMillis());
+                        world.getItems().removeIf(i -> id == i.getSpawnerId());
                     }
                 }
             }
