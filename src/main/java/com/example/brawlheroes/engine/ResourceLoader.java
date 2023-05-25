@@ -1,6 +1,9 @@
 package com.example.brawlheroes.engine;
 
+import com.example.brawlheroes.App;
 import javafx.scene.image.Image;
+import javafx.scene.media.Media;
+import javafx.scene.media.MediaPlayer;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -14,6 +17,11 @@ public class ResourceLoader {
     private Image bloodImage;
     private Image shotgunImage;
     private Image rifleImage;
+    private Image pistolImage;
+    private Media shotgun;
+    private Media pistol;
+    private Media rifle;
+    private Media start;
     public ResourceLoader() {
         try {
             heroImage = new Image(new FileInputStream("sprites/hero.png"));
@@ -24,6 +32,11 @@ public class ResourceLoader {
             bloodImage = new Image(new FileInputStream("sprites/blood.png"));
             shotgunImage = new Image(new FileInputStream("sprites/shotgun.png"));
             rifleImage = new Image(new FileInputStream("sprites/rifle.png"));
+            pistolImage = new Image(new FileInputStream("sprites/pistol.png"));
+            shotgun = new Media(App.class.getResource("sounds/shotgun_sound.mp3").toExternalForm());
+            pistol = new Media(App.class.getResource("sounds/pistol_sound.mp3").toExternalForm());
+            rifle = new Media(App.class.getResource("sounds/rifle_sound.mp3").toExternalForm());
+            start = new Media(App.class.getResource("sounds/start.mp3").toExternalForm());
         } catch (FileNotFoundException e) {
             throw new RuntimeException(e);
         }
@@ -58,5 +71,25 @@ public class ResourceLoader {
 
     public Image getRifleImage() {
         return rifleImage;
+    }
+
+    public Media getShotgun() {
+        return shotgun;
+    }
+
+    public Media getPistol() {
+        return pistol;
+    }
+
+    public Media getRifle() {
+        return rifle;
+    }
+
+    public Media getStart() {
+        return start;
+    }
+
+    public Image getPistolImage() {
+        return pistolImage;
     }
 }

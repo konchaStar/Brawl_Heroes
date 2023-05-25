@@ -4,6 +4,7 @@ import com.example.brawlheroes.Consts;
 import javafx.scene.Scene;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseButton;
+import javafx.scene.media.Media;
 
 public class Controls {
     private static boolean up = false;

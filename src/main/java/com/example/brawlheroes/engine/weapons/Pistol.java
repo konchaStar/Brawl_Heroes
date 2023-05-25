@@ -1,7 +1,11 @@
 package com.example.brawlheroes.engine.weapons;
 
+import com.example.brawlheroes.App;
 import com.example.brawlheroes.engine.World;
 import javafx.geometry.Rectangle2D;
+import javafx.scene.media.Media;
+import javafx.scene.media.MediaPlayer;
+import javafx.util.Duration;
 
 public class Pistol extends Weapon {
     public Pistol() {
@@ -12,6 +16,7 @@ public class Pistol extends Weapon {
     @Override
     public void fire(World world) {
         if(System.currentTimeMillis() - lastShot > delay && ammo > 0) {
+            new MediaPlayer(world.getLoader().getPistol()).play();
             ammo--;
             world.addBullet(new Bullet(world.getMainHero(), world.getMainHero().getPosition(), new Rectangle2D(0, 0, 15, 10),
                     world.getLoader().getBulletImage(), world.getMainHero().getDirection(),

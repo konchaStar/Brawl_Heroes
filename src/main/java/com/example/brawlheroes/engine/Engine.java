@@ -9,11 +9,15 @@ import javafx.fxml.FXMLLoader;
 import javafx.geometry.Point2D;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Scene;
+import javafx.scene.media.Media;
+import javafx.scene.media.MediaPlayer;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.ConcurrentModificationException;
 import java.util.Random;
 
 public class Engine {
@@ -93,6 +97,9 @@ public class Engine {
                             .filter(s -> s.getId() == item.getSpawnerId())
                             .findAny()
                             .get().pick(world));
+                    Media sound = new Media(App.class.getResource("sounds/pickup_sound.mp3").toExternalForm());
+                    MediaPlayer player = new MediaPlayer(sound);
+                    player.play();
                     try {
                         connection.send(new Message(Integer.valueOf(item.getSpawnerId()), Message.MessageType.PICKED));
                     } catch (IOException e) {
@@ -123,24 +130,28 @@ public class Engine {
                 Consts.TILE_SIZE, Consts.TILE_SIZE);
         Rectangle2D enemyRect = new Rectangle2D(world.getEnemy().getPosition().getX(), world.getEnemy().getPosition().getY(),
                 Consts.TILE_SIZE, Consts.TILE_SIZE);
-        for(Bullet bullet : world.getBullets()) {
-            Rectangle2D bulletRect = new Rectangle2D(bullet.getPosition().getX(), bullet.getPosition().getY(),
-                    bullet.getHitbox().getWidth(), bullet.getHitbox().getHeight());
-            if(heroRect.intersects(bulletRect) && bullet.getOwner() != world.getMainHero()) {
-                world.getMainHero().damage(bullet.getDamage());
-                delete.add(bullet);
-            } else if (enemyRect.intersects(bulletRect) && bullet.getOwner() != world.getEnemy()) {
-                delete.add(bullet);
-            } else {
-                for (Entity wall : world.getObjects()) {
-                    Rectangle2D wallRect = new Rectangle2D(wall.getPosition().getX(), wall.getPosition().getY(),
-                            wall.getHitbox().getWidth(), wall.getHitbox().getHeight());
-                    if (wallRect.intersects(bulletRect)) {
-                        delete.add(bullet);
-                        break;
+        try {
+            for (Bullet bullet : world.getBullets()) {
+                Rectangle2D bulletRect = new Rectangle2D(bullet.getPosition().getX(), bullet.getPosition().getY(),
+                        bullet.getHitbox().getWidth(), bullet.getHitbox().getHeight());
+                if (heroRect.intersects(bulletRect) && bullet.getOwner() != world.getMainHero()) {
+                    world.getMainHero().damage(bullet.getDamage());
+                    delete.add(bullet);
+                } else if (enemyRect.intersects(bulletRect) && bullet.getOwner() != world.getEnemy()) {
+                    delete.add(bullet);
+                } else {
+                    for (Entity wall : world.getObjects()) {
+                        Rectangle2D wallRect = new Rectangle2D(wall.getPosition().getX(), wall.getPosition().getY(),
+                                wall.getHitbox().getWidth(), wall.getHitbox().getHeight());
+                        if (wallRect.intersects(bulletRect)) {
+                            delete.add(bullet);
+                            break;
+                        }
                     }
                 }
             }
+        } catch (ConcurrentModificationException e) {
+
         }
         for(Bullet bullet : delete) {
             world.deleteBullet(bullet);
@@ -164,9 +175,9 @@ public class Engine {
         if(world.getMainHero().isAlive()) {
             world.getMainHero().move(deltaTime / 1000.0, Controls.getDirection());
             checkCollision();
-            checkBulletsCollision();
-            moveBullet();
         }
+        checkBulletsCollision();
+        moveBullet();
         Vector2D direction = new Vector2D(Controls.getMouseX() - Consts.WINDOW_WIDTH / 2 + world.getMainHero().getPosition().getX(),
                 Controls.getMouseY() - Consts.WINDOW_HEIGHT / 2 + world.getMainHero().getPosition().getY());
         direction.subtract(world.getMainHero().getPosition());
@@ -175,21 +186,22 @@ public class Engine {
                 && System.currentTimeMillis() - world.getMainHero().getLastStrafe() > Consts.STRAFE_DURATION) {
             world.getMainHero().setSpeed(Consts.DEFAULT_SPEED);
         }
-        if(world.getMainHero().isAlive()) {
-            try {
-                HeroInfo info = new HeroInfo(world.getMainHero().getPosition().getX(), world.getMainHero().getPosition().getY(),
-                        world.getMainHero().getDirection().getX(), world.getMainHero().getDirection().getY());
-                connection.send(new Message(info, Message.MessageType.MOVE));
-            } catch (IOException e) {
-                disconnect();
-            }
+        try {
+            HeroInfo info = new HeroInfo(world.getMainHero().getPosition().getX(), world.getMainHero().getPosition().getY(),
+                    world.getMainHero().getDirection().getX(), world.getMainHero().getDirection().getY());
+            connection.send(new Message(info, Message.MessageType.MOVE));
+        } catch (IOException e) {
+            disconnect();
         }
+
         checkDeath();
         checkSpawns();
+        connection.flush();
     }
     public void onStart(StartPosition position) {
         world = new World(connection);
         world.getMainHero().setPosition(new Point2D(position.getPositionX(), position.getPositionY()));
+        new MediaPlayer(world.getLoader().getStart()).play();
     }
     public void respawn() {
         Point2D point1 = new Point2D(60,60);

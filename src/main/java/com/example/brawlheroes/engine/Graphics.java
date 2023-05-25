@@ -1,24 +1,29 @@
 package com.example.brawlheroes.engine;
 
 import com.example.brawlheroes.Consts;
-import com.example.brawlheroes.engine.weapons.Bullet;
+import com.example.brawlheroes.engine.weapons.*;
 import javafx.scene.Cursor;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
+
+import java.util.ConcurrentModificationException;
 
 public class Graphics {
     private Scene scene;
     private Canvas canvas;
     private World world;
+    private GraphicsContext context;
     public Graphics(World world) {
         canvas = new Canvas(Consts.WINDOW_WIDTH, Consts.WINDOW_HEIGHT);
         VBox box = new VBox(canvas);
         scene = new Scene(box);
         scene.setCursor(Cursor.NONE);
         this.world = world;
+        context = canvas.getGraphicsContext2D();
     }
 
     public Scene getScene() {
@@ -26,36 +31,42 @@ public class Graphics {
     }
 
     public void draw() {
-        GraphicsContext context = canvas.getGraphicsContext2D();
         context.clearRect(0, 0, Consts.WINDOW_WIDTH, Consts.WINDOW_HEIGHT);
         context.setFill(Color.BLACK);
         context.fillRect(0,0, Consts.WINDOW_WIDTH, Consts.WINDOW_HEIGHT);
         context.save();
         context.translate(Consts.WINDOW_WIDTH / 2 - world.getMainHero().getPosition().getX(),
                 Consts.WINDOW_HEIGHT / 2 - world.getMainHero().getPosition().getY());
-        drawFloor(context);
-        drawWalls(context);
-        drawItems(context);
-        drawBullets(context);
+        drawFloor();
+        drawWalls();
+        drawItems();
+        drawBullets();
         if(world.getEnemy().isAlive()) {
-            drawEnemy(context);
+            drawEnemy();
         }
         if(world.getMainHero().isAlive()) {
-            drawHero(context);
+            drawHero();
+        } else {
+            context.restore();
+            context.save();
+            respawn();
+            context.translate(Consts.WINDOW_WIDTH / 2 - world.getMainHero().getPosition().getX(),
+                    Consts.WINDOW_HEIGHT / 2 - world.getMainHero().getPosition().getY());
         }
         context.restore();
-        drawCrosshair(context);
+        drawCrosshair();
+        gui();
     }
-    private void drawFloor(GraphicsContext context) {
+    private void drawFloor() {
         context.drawImage(world.getFloor(), 0, 0, world.getMapSize().getX(), world.getMapSize().getY());
     }
-    private void drawWalls(GraphicsContext context) {
+    private void drawWalls() {
         for(Entity wall : world.getObjects()) {
             context.drawImage(wall.getImage(), wall.getPosition().getX(), wall.getPosition().getY(),
                     Consts.TILE_SIZE, Consts.TILE_SIZE);
         }
     }
-    private void drawHero(GraphicsContext context) {
+    private void drawHero() {
         Hero hero = world.getMainHero();
         context.save();
         context.translate(hero.getPosition().getX(), hero.getPosition().getY());
@@ -66,7 +77,7 @@ public class Graphics {
                 hero.getHitbox().getWidth(), hero.getHitbox().getHeight());
         context.restore();
     }
-    private void drawEnemy(GraphicsContext context) {
+    private void drawEnemy() {
         Hero enemy = world.getEnemy();
         context.save();
         context.translate(enemy.getPosition().getX(), enemy.getPosition().getY());
@@ -77,22 +88,26 @@ public class Graphics {
                 enemy.getHitbox().getWidth(), enemy.getHitbox().getHeight());
         context.restore();
     }
-    private void drawBullets(GraphicsContext context) {
-        for(Bullet bullet : world.getBullets()) {
-            context.save();
-            context.translate(bullet.getPosition().getX(), bullet.getPosition().getY());
-            double dot = bullet.getDirection().dot(new Vector2D(1, 0));
-            double angle = Math.acos(dot) * 180 / Math.PI;
-            context.rotate(bullet.getDirection().getY() > 0 ? angle : -angle);
-            context.drawImage(bullet.getImage(), -bullet.getHitbox().getWidth() / 2.0, -bullet.getHitbox().getHeight() / 2.0,
-                    bullet.getHitbox().getWidth(), bullet.getHitbox().getHeight());
-            context.restore();
+    private void drawBullets() {
+        try {
+            for (Bullet bullet : world.getBullets()) {
+                context.save();
+                context.translate(bullet.getPosition().getX(), bullet.getPosition().getY());
+                double dot = bullet.getDirection().dot(new Vector2D(1, 0));
+                double angle = Math.acos(dot) * 180 / Math.PI;
+                context.rotate(bullet.getDirection().getY() > 0 ? angle : -angle);
+                context.drawImage(bullet.getImage(), -bullet.getHitbox().getWidth() / 2.0, -bullet.getHitbox().getHeight() / 2.0,
+                        bullet.getHitbox().getWidth(), bullet.getHitbox().getHeight());
+                context.restore();
+            }
+        } catch (ConcurrentModificationException e) {
+
         }
     }
-    private void drawCrosshair(GraphicsContext context) {
+    private void drawCrosshair() {
         context.drawImage(world.getLoader().getCrosshairImage(), Controls.getMouseX() - 10, Controls.getMouseY() - 10, 20, 20);
     }
-    private void drawItems(GraphicsContext context) {
+    private void drawItems() {
         for(Item item : world.getItems()) {
             context.save();
             context.translate(item.getPosition().getX(), item.getPosition().getY());
@@ -100,6 +115,35 @@ public class Graphics {
                     item.getHitbox().getWidth(), item.getHitbox().getHeight());
             context.restore();
         }
+    }
+    private void gui() {
+        context.setFill(Color.RED);
+        context.setFont(new Font("fonts/pixel.ttf", 30));
+        context.fillText("HP " + world.getMainHero().getHealthPoints(), 10,Consts.WINDOW_HEIGHT - 40);
+        context.setFill(Color.YELLOW);
+        Weapon weapon = world.getMainHero().getWeaponList().get(world.getMainHero().getSelected());
+        if(weapon.getClass().equals(Shotgun.class)) {
+            context.drawImage(world.getLoader().getShotgunImage(), 1000, 590,160, 40);
+        } else if (weapon.getClass().equals(Rifle.class)) {
+            context.drawImage(world.getLoader().getRifleImage(), 1000, 590,160, 40);
+        } else if (weapon.getClass().equals(Pistol.class)) {
+            context.drawImage(world.getLoader().getPistolImage(), 1000, 590,63, 40);
+        }
+        context.fillText(String.valueOf(world.getMainHero().getWeaponList().get(world.getMainHero().getSelected()).getAmmo()),
+                1000, 660);
+    }
+    private void respawn() {
+        context.setFill(Color.RED);
+        context.setFont(new Font("fonts/pixel.ttf", 60));
+        context.fillText("Dead", 550, 300);
+        context.setFill(Color.WHITE);
+        context.fillText("Press space to respawn", 400, 360);
+    }
+    private void victory() {
+
+    }
+    private void defeat() {
+
     }
     public void disconnect() {
 

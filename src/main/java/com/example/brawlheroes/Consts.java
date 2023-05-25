@@ -10,5 +10,5 @@ public class Consts {
     public static final double STRAFE_SPEED = 240.0;
     public static final long STRAFE_DELAY = 2500;
     public static final long STRAFE_DURATION = 500;
-    public static int KILLS = 10;
+    public static int KILLS = 5;
 }

@@ -30,4 +30,11 @@ public class Connection {
     public void close() throws IOException {
         socket.close();
     }
+    public void flush() {
+        try {
+            out.flush();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }

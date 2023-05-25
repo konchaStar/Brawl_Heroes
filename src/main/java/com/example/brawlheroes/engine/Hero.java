@@ -71,7 +71,7 @@ public class Hero extends Entity {
                 .filter(w -> weapon.getClass().equals(w.getClass()))
                 .findAny();
         if(existed.isPresent()) {
-            existed.get().setAmmo(weapon.getAmmo());
+            existed.get().setAmmo(existed.get().getAmmo() + weapon.getAmmo());
         } else {
             weapons.add(weapon);
         }
@@ -120,5 +120,8 @@ public class Hero extends Entity {
 
     public void setSelected(int selected) {
         this.selected = selected;
+    }
+    public List<Weapon> getWeaponList() {
+        return weapons;
     }
 }
