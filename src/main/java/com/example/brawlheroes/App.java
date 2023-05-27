@@ -28,6 +28,9 @@ public class App extends Application {
             System.exit(0);
         });
         stage.show();
+        Settings settings = new Settings();
+        settings.loadSettings();
+        MenuController.setServerSettings(settings);
         this.stage = stage;
     }
 

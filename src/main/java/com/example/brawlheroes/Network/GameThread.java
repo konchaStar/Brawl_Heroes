@@ -29,8 +29,8 @@ public class GameThread extends Thread {
                 if(message1.getType() == Message.MessageType.DEATH) {
                     kills2++;
                 }
-                if (kills2 == Consts.KILLS) {
-                    connection2.send(new Message(null, Message.MessageType.VICTORY));
+                if (kills2 >= Consts.KILLS) {
+                    connection2.send(new Message(message1.getData(), Message.MessageType.VICTORY));
                     connection1.send(new Message(null, Message.MessageType.DEFEAT));
                     isRunning = false;
                 } else {
@@ -48,8 +48,8 @@ public class GameThread extends Thread {
                 if(message2.getType() == Message.MessageType.DEATH) {
                     kills1++;
                 }
-                if (kills1 == Consts.KILLS) {
-                    connection1.send(new Message(null, Message.MessageType.VICTORY));
+                if (kills1 >= Consts.KILLS) {
+                    connection1.send(new Message(message2.getData(), Message.MessageType.VICTORY));
                     connection2.send(new Message(null, Message.MessageType.DEFEAT));
                     isRunning = false;
                 } else {

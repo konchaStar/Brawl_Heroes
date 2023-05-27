@@ -15,6 +15,8 @@ import java.util.Optional;
 public class Hero extends Entity {
     private Vector2D direction;
     private List<Weapon> weapons;
+    private int kills;
+    private int death;
     private long lastStrafe;
     private int selected;
     private double healthPoints;
@@ -45,6 +47,8 @@ public class Hero extends Entity {
         selected = 0;
         lastStrafe = 0;
         isAlive = true;
+        kills = 0;
+        death = 0;
     }
     public void move(double deltaTime, Vector2D direction) {
         position = position.add(direction.getX() * speed * deltaTime, direction.getY() * speed * deltaTime);
@@ -83,6 +87,7 @@ public class Hero extends Entity {
     public void kill() {
         isAlive = false;
         checkedDeath = false;
+        death++;
     }
     public boolean isAlive() {
         return isAlive;
@@ -123,5 +128,21 @@ public class Hero extends Entity {
     }
     public List<Weapon> getWeaponList() {
         return weapons;
+    }
+
+    public int getKills() {
+        return kills;
+    }
+
+    public void setKills(int kills) {
+        this.kills = kills;
+    }
+
+    public int getDeath() {
+        return death;
+    }
+
+    public void setDeath(int death) {
+        this.death = death;
     }
 }

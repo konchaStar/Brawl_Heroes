@@ -1,10 +1,15 @@
 package com.example.brawlheroes.engine;
 
+import com.example.brawlheroes.App;
 import com.example.brawlheroes.Consts;
+import javafx.application.Platform;
+import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseButton;
 import javafx.scene.media.Media;
+
+import java.io.IOException;
 
 public class Controls {
     private static boolean up = false;
@@ -29,8 +34,18 @@ public class Controls {
                 right = true;
             }
             if(e.getCode() == KeyCode.ESCAPE) {
-                if(engine.isStarted()) {
-
+                if(!engine.isStarted()) {
+                    Platform.runLater(() -> {
+                        FXMLLoader fxmlLoader = new FXMLLoader(App.class.getResource("menu.fxml"));
+                        Scene newScene = null;
+                        try {
+                            newScene = new Scene(fxmlLoader.load());
+                        } catch (IOException ex) {
+                            throw new RuntimeException(ex);
+                        }
+                        newScene.getStylesheets().addAll(App.class.getResource("menuStyle.css").toExternalForm());
+                        App.getStage().setScene(newScene);
+                    });
                 }
             }
             if(e.getCode() == KeyCode.E) {

@@ -40,6 +40,13 @@ public class Server {
             try {
                 Socket socket = serverSocket.accept();
                 connections.add(new Connection(socket));
+                new Thread(() -> {
+                    Connection connection = connections.peek();
+                    try {
+                        Message message = connection.receive();
+                        connections.remove(connection);
+                    } catch (Exception ignore) {}
+                }).start();
                 while (connections.size() > 1) {
                     Connection connection1 = connections.poll();
                     Connection connection2 = connections.poll();
@@ -63,8 +70,7 @@ public class Server {
                         if(connection2.isConnected()) {
                             connections.add(connection2);
                         }
-                    }
-                    if(connected) {
+                    } else {
                         new GameThread(connection1, connection2).start();
                     }
                 }

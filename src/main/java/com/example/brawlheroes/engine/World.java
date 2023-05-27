@@ -95,7 +95,7 @@ public class World {
             try {
                 connection.send(new Message(info, Message.MessageType.FIRE));
             } catch (IOException e) {
-                throw new RuntimeException(e);
+
             }
         }
     }

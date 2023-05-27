@@ -1,0 +1,22 @@
+#pane {
+    -fx-background-image: url("images/menu_background.png");
+    -fx-background-position: 0,0;
+}
+#serverIp {
+    -fx-background-color: transparent;
+}
+#serverPort {
+    -fx-background-color: transparent;
+}
+#back {
+    -fx-background-size: 145,95;
+    -fx-background-color: transparent;
+    -fx-background-image: url("images/back_button.png");
+    -fx-background-position: 0,0;
+}
+#save {
+    -fx-background-size: 145,105;
+    -fx-background-color: transparent;
+    -fx-background-image: url("images/save_button.png");
+    -fx-background-position: 0,0;
+}

@@ -33,7 +33,7 @@ public class Graphics {
     public void draw() {
         context.clearRect(0, 0, Consts.WINDOW_WIDTH, Consts.WINDOW_HEIGHT);
         context.setFill(Color.BLACK);
-        context.fillRect(0,0, Consts.WINDOW_WIDTH, Consts.WINDOW_HEIGHT);
+        context.fillRect(0, 0, Consts.WINDOW_WIDTH, Consts.WINDOW_HEIGHT);
         context.save();
         context.translate(Consts.WINDOW_WIDTH / 2 - world.getMainHero().getPosition().getX(),
                 Consts.WINDOW_HEIGHT / 2 - world.getMainHero().getPosition().getY());
@@ -41,17 +41,11 @@ public class Graphics {
         drawWalls();
         drawItems();
         drawBullets();
-        if(world.getEnemy().isAlive()) {
+        if (world.getEnemy().isAlive()) {
             drawEnemy();
         }
-        if(world.getMainHero().isAlive()) {
+        if (world.getMainHero().isAlive()) {
             drawHero();
-        } else {
-            context.restore();
-            context.save();
-            respawn();
-            context.translate(Consts.WINDOW_WIDTH / 2 - world.getMainHero().getPosition().getX(),
-                    Consts.WINDOW_HEIGHT / 2 - world.getMainHero().getPosition().getY());
         }
         context.restore();
         drawCrosshair();
@@ -121,31 +115,46 @@ public class Graphics {
         context.setFont(new Font("fonts/pixel.ttf", 30));
         context.fillText("HP " + world.getMainHero().getHealthPoints(), 10,Consts.WINDOW_HEIGHT - 40);
         context.setFill(Color.YELLOW);
-        Weapon weapon = world.getMainHero().getWeaponList().get(world.getMainHero().getSelected());
-        if(weapon.getClass().equals(Shotgun.class)) {
-            context.drawImage(world.getLoader().getShotgunImage(), 1000, 590,160, 40);
-        } else if (weapon.getClass().equals(Rifle.class)) {
-            context.drawImage(world.getLoader().getRifleImage(), 1000, 590,160, 40);
-        } else if (weapon.getClass().equals(Pistol.class)) {
-            context.drawImage(world.getLoader().getPistolImage(), 1000, 590,63, 40);
+        try {
+            Weapon weapon = world.getMainHero().getWeaponList().get(world.getMainHero().getSelected());
+            if (weapon.getClass().equals(Shotgun.class)) {
+                context.drawImage(world.getLoader().getShotgunImage(), 1000, 590, 160, 40);
+            } else if (weapon.getClass().equals(Rifle.class)) {
+                context.drawImage(world.getLoader().getRifleImage(), 1000, 590, 160, 40);
+            } else if (weapon.getClass().equals(Pistol.class)) {
+                context.drawImage(world.getLoader().getPistolImage(), 1000, 590, 63, 40);
+            }
+            context.fillText(String.valueOf(world.getMainHero().getWeaponList().get(world.getMainHero().getSelected()).getAmmo()),
+                    1000, 660);
+        } catch (IndexOutOfBoundsException e) {
+
         }
-        context.fillText(String.valueOf(world.getMainHero().getWeaponList().get(world.getMainHero().getSelected()).getAmmo()),
-                1000, 660);
+        context.setFill(Color.WHITE);
+        context.fillText(world.getMainHero().getKills() + " " + world.getMainHero().getDeath(), 10, 30);
     }
-    private void respawn() {
+    public void respawn() {
         context.setFill(Color.RED);
         context.setFont(new Font("fonts/pixel.ttf", 60));
         context.fillText("Dead", 550, 300);
         context.setFill(Color.WHITE);
-        context.fillText("Press space to respawn", 400, 360);
+        context.fillText("Press space to respawn", 370, 360);
     }
-    private void victory() {
-
+    public void victory() {
+        context.setFill(Color.BLUE);
+        context.setFont(new Font("fonts/pixel.ttf", 60));
+        context.fillText("VICTORY", 530, 300);
+        context.fillText("Press esc to exit to menu", 370, 360);
     }
-    private void defeat() {
-
+    public void defeat() {
+        context.setFill(Color.RED);
+        context.setFont(new Font("fonts/pixel.ttf", 60));
+        context.fillText("DEFEAT", 540, 300);
+        context.fillText("Press esc to exit to menu", 370, 360);
     }
     public void disconnect() {
-
+        context.setFill(Color.RED);
+        context.setFont(new Font("fonts/pixel.ttf", 60));
+        context.fillText("Enemy disconnected", 450, 300);
+        context.fillText("Press esc to exit to menu", 370, 360);
     }
 }

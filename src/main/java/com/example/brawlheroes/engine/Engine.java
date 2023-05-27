@@ -22,8 +22,6 @@ import java.util.Random;
 
 public class Engine {
     private long time;
-    private int kills;
-    private int death;
     private Graphics graphics;
     private long deltaTime;
     private Stage stage;
@@ -244,7 +242,7 @@ public class Engine {
                                 new Rectangle2D(0,0,Consts.TILE_SIZE * 1.5,Consts.TILE_SIZE * 1.5),
                                 world.getLoader().getBloodImage(), 0));
                         world.getEnemy().setAlive(false);
-                        kills++;
+                        world.getMainHero().setKills(world.getMainHero().getKills() + 1);
                     }
                     case RESPAWN -> {
                         world.getEnemy().setAlive(true);
@@ -257,6 +255,22 @@ public class Engine {
                         spawn.setSpawned(false);
                         spawn.setLastSpawn(System.currentTimeMillis());
                         world.getItems().removeIf(i -> id == i.getSpawnerId());
+                    }
+                    case VICTORY -> {
+                        DeathInfo info = (DeathInfo) message.getData();
+                        world.getItems().add(new Item(new Point2D(info.getPositionX(), info.getPositionY()),
+                                new Rectangle2D(0,0,Consts.TILE_SIZE * 1.5,Consts.TILE_SIZE * 1.5),
+                                world.getLoader().getBloodImage(), 0));
+                        world.getEnemy().setAlive(false);
+                        world.getMainHero().setKills(world.getMainHero().getKills() + 1);
+                        isStarted = false;
+                        graphics.draw();
+                        graphics.victory();
+                    }
+                    case DEFEAT -> {
+                        isStarted = false;
+                        graphics.draw();
+                        graphics.defeat();
                     }
                 }
             }
@@ -301,6 +315,9 @@ public class Engine {
                 time = System.currentTimeMillis();
                 onUpdate();
                 graphics.draw();
+                if(!world.getMainHero().isAlive()) {
+                    graphics.respawn();
+                }
                 try {
                     Thread.currentThread().sleep(25);
                 } catch (InterruptedException e) {
@@ -313,16 +330,5 @@ public class Engine {
     private void disconnect() {
         isStarted = false;
         graphics.disconnect();
-        Platform.runLater(() -> {
-            FXMLLoader fxmlLoader = new FXMLLoader(App.class.getResource("menu.fxml"));
-            Scene scene = null;
-            try {
-                scene = new Scene(fxmlLoader.load());
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-            scene.getStylesheets().addAll(App.class.getResource("menuStyle.css").toExternalForm());
-            stage.setScene(scene);
-        });
     }
 }
