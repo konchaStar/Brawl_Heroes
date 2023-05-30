@@ -4,15 +4,11 @@ import com.example.brawlheroes.App;
 import com.example.brawlheroes.Consts;
 import com.example.brawlheroes.Network.*;
 import com.example.brawlheroes.engine.weapons.Bullet;
-import javafx.application.Platform;
-import javafx.fxml.FXMLLoader;
 import javafx.geometry.Point2D;
 import javafx.geometry.Rectangle2D;
-import javafx.scene.Scene;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.stage.Stage;
-import javafx.util.Duration;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -132,10 +128,10 @@ public class Engine {
             for (Bullet bullet : world.getBullets()) {
                 Rectangle2D bulletRect = new Rectangle2D(bullet.getPosition().getX(), bullet.getPosition().getY(),
                         bullet.getHitbox().getWidth(), bullet.getHitbox().getHeight());
-                if (heroRect.intersects(bulletRect) && bullet.getOwner() != world.getMainHero()) {
+                if (heroRect.intersects(bulletRect) && bullet.getOwner() != world.getMainHero() && world.getMainHero().isAlive()) {
                     world.getMainHero().damage(bullet.getDamage());
                     delete.add(bullet);
-                } else if (enemyRect.intersects(bulletRect) && bullet.getOwner() != world.getEnemy()) {
+                } else if (enemyRect.intersects(bulletRect) && bullet.getOwner() != world.getEnemy() && world.getEnemy().isAlive()) {
                     delete.add(bullet);
                 } else {
                     for (Entity wall : world.getObjects()) {
@@ -191,7 +187,6 @@ public class Engine {
         } catch (IOException e) {
             disconnect();
         }
-
         checkDeath();
         checkSpawns();
         connection.flush();
@@ -262,12 +257,14 @@ public class Engine {
                                 new Rectangle2D(0,0,Consts.TILE_SIZE * 1.5,Consts.TILE_SIZE * 1.5),
                                 world.getLoader().getBloodImage(), 0));
                         world.getEnemy().setAlive(false);
+                        new MediaPlayer(world.getLoader().getVictory()).play();
                         world.getMainHero().setKills(world.getMainHero().getKills() + 1);
                         isStarted = false;
                         graphics.draw();
                         graphics.victory();
                     }
                     case DEFEAT -> {
+                        new MediaPlayer(world.getLoader().getDefeat()).play();
                         isStarted = false;
                         graphics.draw();
                         graphics.defeat();

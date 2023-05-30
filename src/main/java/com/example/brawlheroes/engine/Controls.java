@@ -84,7 +84,7 @@ public class Controls {
             mouseY = e.getY();
         });
         scene.setOnMousePressed(e -> {
-            if(e.getButton() == MouseButton.PRIMARY) {
+            if(e.getButton() == MouseButton.PRIMARY && world.getMainHero().isAlive() && engine.isStarted()) {
                 world.getMainHero().fire(world);
             }
         });

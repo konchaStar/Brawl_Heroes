@@ -1,11 +1,8 @@
 package com.example.brawlheroes.engine.weapons;
 
-import com.example.brawlheroes.App;
 import com.example.brawlheroes.engine.World;
 import javafx.geometry.Rectangle2D;
-import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
-import javafx.util.Duration;
 
 public class Pistol extends Weapon {
     public Pistol() {

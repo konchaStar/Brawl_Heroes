@@ -2,10 +2,8 @@ package com.example.brawlheroes.Network;
 
 
 import com.example.brawlheroes.Consts;
-import javafx.geometry.Point2D;
 
 import java.io.IOException;
-import java.util.Random;
 
 public class GameThread extends Thread {
     private Connection connection1;

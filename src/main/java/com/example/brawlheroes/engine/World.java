@@ -6,7 +6,6 @@ import com.example.brawlheroes.Network.Connection;
 import com.example.brawlheroes.Network.Message;
 import com.example.brawlheroes.engine.weapons.Bullet;
 import com.example.brawlheroes.engine.weapons.Pistol;
-import com.example.brawlheroes.engine.weapons.Shotgun;
 import javafx.geometry.Point2D;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.image.Image;

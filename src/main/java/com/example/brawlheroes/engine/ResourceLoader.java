@@ -22,6 +22,8 @@ public class ResourceLoader {
     private Media pistol;
     private Media rifle;
     private Media start;
+    private Media victory;
+    private Media defeat;
     public ResourceLoader() {
         try {
             heroImage = new Image(new FileInputStream("sprites/hero.png"));
@@ -37,6 +39,8 @@ public class ResourceLoader {
             pistol = new Media(App.class.getResource("sounds/pistol_sound.mp3").toExternalForm());
             rifle = new Media(App.class.getResource("sounds/rifle_sound.mp3").toExternalForm());
             start = new Media(App.class.getResource("sounds/start.mp3").toExternalForm());
+            victory = new Media(App.class.getResource("sounds/win.mp3").toExternalForm());
+            defeat = new Media(App.class.getResource("sounds/defeat.mp3").toExternalForm());
         } catch (FileNotFoundException e) {
             throw new RuntimeException(e);
         }
@@ -91,5 +95,13 @@ public class ResourceLoader {
 
     public Image getPistolImage() {
         return pistolImage;
+    }
+
+    public Media getVictory() {
+        return victory;
+    }
+
+    public Media getDefeat() {
+        return defeat;
     }
 }
